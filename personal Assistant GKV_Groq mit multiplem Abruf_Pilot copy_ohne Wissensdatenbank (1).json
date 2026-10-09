@@ -1,0 +1,695 @@
+{
+  "name": "personal Assistant GKV_Groq mit multiplem Abruf_Pilot copy_ohne Wissensdatenbank",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Hier ist eine Kunden-E-Mail.\n\nExtrahiere daraus die relevanten Informationen für die Erstellung einer Kundenantwort, berücksichtige die bereitgestellten offiziellen Kriterien der Krankenkasse und priorisiere das Anliegen anhand der Eisenhower-Matrix.\n\nKunden-E-Mail:\nBetreff: {{ $json.subject }}\nInhalt: Inhalt: {{ ($json.text || '').slice(0, 3000) }}\n\n\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Du bist ein Assistenzsystem für Kundenberater einer Krankenkasse.\n\nRolle:\nAnalysiere eingehende Kunden-E-Mails fachlich und strukturiere die relevanten Informationen für die weitere Bearbeitung. Die eigentliche Kundenkommunikation wird von einem nachgelagerten System erstellt.\n\nKontext:\n   Die folgenden Priorisierungskriterien sind die verbindliche Grundlage für die Einordnung nach der Eisenhower-Matrix:\n\nEingehende Kunden-E-Mails werden anhand von Wichtigkeit und Dringlichkeit nach der Eisenhower-Matrix priorisiert.\n\n1. Wichtig und dringend – Priorität 1\n\nHierzu gehören insbesondere Anliegen, bei denen eine zeitnahe Bearbeitung erforderlich ist und eine Verzögerung erhebliche Auswirkungen haben kann.\n\nBeispiele:\n\n* unmittelbar bevorstehende oder bereits laufende Fristen\n* Widersprüche oder andere fristgebundene Vorgänge\n* akute Probleme bei der Sicherstellung einer notwendigen Versorgung\n* dringende Leistungs- oder Kostenübernahmefragen\n* drohende erhebliche finanzielle Nachteile für den Kunden\n* zeitkritische Krankenhaus-, Reha- oder Versorgungsfälle\n* Fälle mit unmittelbar bevorstehendem Behandlungstermin, sofern eine Entscheidung der Krankenkasse erforderlich ist\n* Beschwerden mit konkreter Dringlichkeit\n* Vorgänge, bei denen eine gesetzliche oder interne Bearbeitungsfrist einzuhalten ist\n\n2. Wichtig und nicht dringend – Priorität 2\n\nHierzu gehören fachlich oder finanziell relevante Anliegen, bei denen aktuell keine unmittelbare zeitliche Dringlichkeit besteht.\n\nBeispiele:\n\n* allgemeine Leistungsanfragen mit größerem Beratungsbedarf\n* Anträge ohne unmittelbar bevorstehende Frist\n* Fragen zur Mitgliedschaft oder Versicherung\n* Fragen zu Beiträgen\n* Fragen zur Familienversicherung\n* längerfristige Reha- oder Versorgungsplanung\n* Kostenerstattungsanfragen ohne erkennbare zeitliche Dringlichkeit\n* umfangreiche oder komplexe Sachverhalte, die eine fachliche Prüfung benötigen\n* allgemeine Fragen zu Leistungsansprüchen\n\n3. Nicht wichtig und dringend – Priorität 3\n\nHierzu gehören Anliegen, die kurzfristig beantwortet oder bearbeitet werden sollen, deren Auswirkungen bei Verzögerung jedoch vergleichsweise gering sind.\n\nBeispiele:\n\n* kurzfristige allgemeine Servicefragen\n* einfache organisatorische Anliegen mit engem zeitlichem Bezug\n* kurzfristig benötigte Bescheinigungen, sofern keine erhebliche Auswirkung bei Verzögerung besteht\n* Fragen zu Öffnungszeiten, Kontaktmöglichkeiten oder Zuständigkeiten\n* einfache Rückfragen zu bereits bekannten Vorgängen\n* kurzfristige Änderungen von Kontaktdaten oder organisatorischen Angaben\n\n4. Nicht wichtig und nicht dringend – Priorität 4\n\nHierzu gehören Anliegen ohne erkennbare zeitliche Dringlichkeit und ohne wesentliche unmittelbare Auswirkungen.\n\nBeispiele:\n\n* allgemeine Informationsanfragen\n* allgemeine Fragen zu Angeboten oder Services\n* nicht zeitkritische organisatorische Fragen\n* Informationswünsche ohne konkreten Vorgang\n* allgemeine Anfragen zu Präventions- oder Zusatzangeboten\n* sonstige Anliegen ohne Frist, Versorgungsauswirkung oder unmittelbaren Handlungsbedarf\n\nBei der Priorisierung sind insbesondere folgende Faktoren zu berücksichtigen:\n\n* gesetzliche Fristen\n* interne Bearbeitungsfristen\n* vom Kunden genannte Fristen\n* bevorstehende Termine\n* Auswirkungen auf die medizinische Versorgung\n* Auswirkungen auf Leistungsansprüche\n* finanzielle Auswirkungen\n* mögliche Nachteile für den Kunden\n* Dringlichkeit einer beantragten Leistung\n* bestehende Versorgungssituationen\n* Widersprüche und Beschwerden\n* Vollständigkeit der erforderlichen Unterlagen\n* bereits laufende Vorgänge\n* Komplexität des Sachverhalts\n* notwendige Beteiligung anderer Fachbereiche\n* besondere gesetzliche oder interne Vorgaben\n\nWichtig:\n\nDie Priorität darf nicht allein anhand einzelner Wörter oder des Betreffs bestimmt werden. Entscheidend ist der tatsächliche Inhalt und Kontext der E-Mail.\n\nEine vom Kunden behauptete Dringlichkeit ist nicht automatisch eine fachlich bestätigte Dringlichkeit.\n\nBei mehreren Anliegen innerhalb einer E-Mail ist jedes Anliegen einzeln zu bewerten. Anschließend ist eine Gesamtpriorität für die E-Mail festzulegen. Maßgeblich ist dabei grundsätzlich das Anliegen mit der höchsten sachlich begründeten Priorität.\n\nWenn Fristen, Versorgungsauswirkungen oder andere entscheidungsrelevante Informationen fehlen, darf keine Dringlichkeit erfunden werden. Der Vorgang ist entsprechend als „Prüfung erforderlich“ zu kennzeichnen.\n\nDie Eisenhower-Matrix dient ausschließlich der internen Vorsortierung und wird nicht gegenüber dem Kunden kommuniziert.\n\nDie tatsächlichen gesetzlichen, internen und fachlichen Vorgaben der jeweiligen Krankenkasse haben Vorrang vor diesen allgemeinen Kriterien.\n\n\n\n\nZiel:\nExtrahiere die für die weitere Bearbeitung relevanten Informationen aus der E-Mail, berücksichtige die bereitgestellten Kriterien und ordne das Anliegen anhand der Eisenhower-Matrix ein.\n\nBewerte insbesondere:\n\n* Anliegen und Thema\n* relevante Fristen oder Termine\n* Wichtigkeit\n* Dringlichkeit\n* mögliche Auswirkungen für den Kunden\n* erforderliche nächste interne Aktion\n* fehlende Informationen\n* relevante Kriterien aus den bereitgestellten Dokumenten\n\nEisenhower-Matrix:\n1 = PRIORITY_HIGH\n2 = PRIORITY_MIDDLE\n3 = PRIORITY_LOW\n4 = PRIORITY_VERY_LOW\n\nWenn mehrere Anliegen vorhanden sind, fasse sie in einem einzigen Ergebnis zusammen und vergib in \"prioritaet_bezeichnung\" die höchste zutreffende Priorität.\n\nSetze \"pruefung_erforderlich\" auf false, wenn das Anliegen eindeutig ist und eine sachliche Antwort ohne verbindliche Leistungsentscheidung möglich ist, zum Beispiel bei Bescheinigungen, Adress- oder Kontaktänderungen, allgemeinen Informationsfragen oder Rückfragen zu Unterlagen.\n\nSetze \"pruefung_erforderlich\" nur auf true, wenn für eine korrekte Antwort eine fachliche Einzelfallprüfung, eine Leistungs- oder Kostenentscheidung oder Unterlagen nötig sind, die in der E-Mail fehlen. Nenne dann den Grund in \"pruefungsgrund\".\n\nErstelle niemals selbst eine Kunden-E-Mail. Die Erstellung der Kundenantwort erfolgt durch ein separates System.\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -768,
+        -240
+      ],
+      "id": "0aa68b14-7048-47ae-a33a-85b00fe341de",
+      "name": "Analyse Assistent",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\nErstelle einen Antwortentwurf an den Kunden auf Basis der folgenden fachlichen Vorprüfung.\n\nUrsprüngliche Kundennachricht:\n{{ ($('Start Fallbearbeitung (je Email)').item.json.text || '').slice(0, 3000) }}\n\nErgebnis der Vorprüfung:\nAnliegen: {{ $('Analyse Assistent').item.json.output.anliegen }}\nThema: {{ $('Analyse Assistent').item.json.output.thema }}\nFrist oder Termin: {{ $('Analyse Assistent').item.json.output.frist_oder_termin }}\nRelevante Informationen: {{ $('Analyse Assistent').item.json.output.relevante_informationen.join('; ') }}\nFachliche Grundlage: {{ $('Analyse Assistent').item.json.output.fachliche_grundlage.join('; ') }}\nFehlende Informationen: {{ $('Analyse Assistent').item.json.output.fehlende_informationen.join('; ') }}\n\nRegeln:\n- Stütze dich inhaltlich ausschließlich auf die Vorprüfung und erfinde keine Rechtsgrundlagen.\n- Für Stil, Aufbau und Formulierung gelten die Regeln aus deiner System Message.\n- Wenn Informationen fehlen, bitte den Kunden höflich und konkret darum.\n- Nenne eine Frist, falls eine angegeben ist.\n- Schreibe freundlich, klar und in der Sie-Form.",
+        "options": {
+          "systemMessage": "   Halte dich beim Schreiben verbindlich an die folgenden Regeln für Kunden-E-Mails:\n\nDie Kundenkommunikation soll freundlich, verständlich, sachlich und professionell erfolgen.\n\n1. Allgemeine Sprache\n\n* Verwende eine klare und leicht verständliche Sprache.\n* Vermeide unnötige Fachbegriffe oder erkläre sie verständlich.\n* Formuliere wertschätzend und kundenorientiert.\n* Keine unnötig langen oder komplizierten Sätze.\n* Keine Schuldzuweisungen oder vorwurfsvollen Formulierungen.\n* Keine Vermutungen als Tatsachen darstellen.\n\n2. Inhalt\n\n* Gehe konkret auf das Anliegen des Kunden ein.\n* Beantworte die Frage möglichst direkt.\n* Verwende nur Informationen, die aus den vorliegenden Informationen und den gültigen fachlichen Vorgaben hervorgehen.\n* Fehlende Informationen dürfen nicht erfunden werden.\n* Wenn eine Prüfung erforderlich ist, soll dies transparent und verständlich dargestellt werden.\n* Erforderliche Unterlagen oder nächste Schritte klar benennen.\n\n3. Fachliche Aussagen\n\n* Leistungsentscheidungen, Erstattungen, Fristen oder andere verbindliche Aussagen nur treffen, wenn diese fachlich abgesichert sind.\n* Bei nicht eindeutigen Sachverhalten keine eigene Interpretation als verbindliche Entscheidung darstellen.\n* Bei Unsicherheit auf eine erforderliche Prüfung hinweisen.\n* Gesetzliche, interne oder fachliche Vorgaben sind gegenüber allgemeinen Formulierungsregeln vorrangig.\n\n4. Kundenorientierung\n\n* Den Kunden nicht unnötig an andere Stellen verweisen.\n* Wenn der Kunde selbst etwas tun muss, genau erklären, was benötigt wird.\n* Nach Möglichkeit konkrete nächste Schritte nennen.\n* Bereits vom Kunden bereitgestellte Informationen nicht unnötig erneut abfragen.\n* Sensible persönliche oder gesundheitliche Informationen nicht unnötig wiederholen.\n\n5. Tonalität\n\n* Professionell, freundlich und respektvoll.\n* Keine übertriebene oder künstlich wirkende Freundlichkeit.\n* Keine Floskeln ohne Mehrwert.\n* Bei Beschwerden oder schwierigen Anliegen besonders sachlich und deeskalierend formulieren.\n* Keine Bewertung des Kunden oder seines Verhaltens.\n\n6. Aufbau\n\n* Zuerst direkt auf das Anliegen eingehen.\n* Danach die relevante Information oder Entscheidung erklären.\n* Anschließend gegebenenfalls erforderliche Unterlagen oder nächste Schritte nennen.\n* Informationen logisch und übersichtlich strukturieren.\n* Nur notwendige Informationen aufnehmen.\n\n7. Datenschutz\n\n* Nur personenbezogene Informationen verwenden, die für die Bearbeitung des Anliegens erforderlich sind.\n* Gesundheitsdaten und andere sensible Informationen besonders zurückhaltend behandeln.\n* Keine unnötige Wiederholung sensibler Daten in der Antwort.\n\n8. Unsicherheit\n\n* Wenn die vorliegenden Informationen keine eindeutige Antwort ermöglichen, keine Antwort erfinden.\n* Stattdessen den Sachverhalt als prüfungsbedürftig kennzeichnen und gegebenenfalls gezielt fehlende Informationen benennen.\n\n9. Verbindlichkeit\n\n* Zwischen einer Information, einer Prüfung und einer verbindlichen Entscheidung unterscheiden.\n* Keine verbindliche Zusage geben, wenn diese nicht durch die fachlichen Vorgaben gedeckt ist.\n\n10. Formulierung\n\n* Die Antwort soll individuell auf die konkrete Kunden-E-Mail eingehen.\n* Keine Standardantwort verwenden, wenn eine individuelle Antwort möglich ist.\n* Keine internen Prozesse, Priorisierungen oder die Eisenhower-Matrix gegenüber dem Kunden erwähnen.\n* Keine internen Bewertungen oder technischen Informationen in die Kundenkommunikation übernehmen.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        608,
+        -16
+      ],
+      "id": "8fbfa172-963c-402b-9e1a-e0c069d319cf",
+      "name": "Antwort Assistent"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"anliegen\": {\n      \"type\": \"string\",\n      \"description\": \"Kurze Zusammenfassung des Kundenanliegens.\"\n    },\n    \"thema\": {\n      \"type\": \"string\"\n    },\n    \"prioritaet_bezeichnung\": {\n      \"type\": \"string\",\n      \"enum\": [\"PRIORITY_HIGH\", \"PRIORITY_MIDDLE\", \"PRIORITY_LOW\", \"PRIORITY_VERY_LOW\"],\n      \"description\": \"Genau einer dieser vier Werte, ohne Zusatztext.\"\n    },\n    \"frist_oder_termin\": {\n      \"type\": [\"string\", \"null\"],\n      \"description\": \"null, wenn keine Frist erkennbar ist.\"\n    },\n    \"relevante_informationen\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"description\": \"Immer eine Liste, notfalls leer: []\"\n    },\n    \"fehlende_informationen\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"description\": \"Immer eine Liste, notfalls leer: []\"\n    },\n    \"fachliche_grundlage\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"description\": \"Immer eine Liste, notfalls leer: []\"\n    },\n    \"pruefung_erforderlich\": {\n      \"type\": \"boolean\",\n      \"description\": \"true oder false, ohne Anführungszeichen.\"\n    },\n    \"pruefungsgrund\": {\n      \"type\": [\"string\", \"null\"],\n      \"description\": \"null, wenn keine Prüfung erforderlich ist.\"\n    }\n  },\n  \"required\": [\n    \"anliegen\",\n    \"thema\",\n    \"prioritaet_bezeichnung\",\n    \"frist_oder_termin\",\n    \"relevante_informationen\",\n    \"fehlende_informationen\",\n    \"fachliche_grundlage\",\n    \"pruefung_erforderlich\",\n    \"pruefungsgrund\"\n  ]\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -624,
+        -64
+      ],
+      "id": "acc816ee-281f-42fd-aa13-03e6043e43da",
+      "name": "Strukturierte Analyse"
+    },
+    {
+      "parameters": {
+        "content": "Analyse der ungelesenen Emails",
+        "height": 560,
+        "width": 880,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1024,
+        -352
+      ],
+      "typeVersion": 1,
+      "id": "3f4a8714-697f-478a-a5a0-3bbb1d291ad3",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "Label setzen und Fallweiche",
+        "height": 400,
+        "width": 592,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -64,
+        -176
+      ],
+      "typeVersion": 1,
+      "id": "2876aee6-d5c2-4c41-85ec-b52502138507",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "Antwortentwurf oder Hinweis an den Berater + Freigabe",
+        "height": 528,
+        "width": 868,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        576,
+        -80
+      ],
+      "typeVersion": 1,
+      "id": "fa810103-1766-4740-ad74-255d435fee16",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "resource": "label"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -416,
+        -240
+      ],
+      "id": "30f95923-7087-4637-9b17-bed1a9b4401b",
+      "name": "Gmail Labels abrufen",
+      "webhookId": "cb0f9b56-2de2-4e5a-a364-e58f6a6ced2e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "bHw96IRSG6IJR90W",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const priority = $('Analyse Assistent').first().json.output.prioritaet_bezeichnung;\n\nconst label = $input.all().find(\n  item => item.json.name === priority\n);\n\nif (!label) {\n  throw new Error(`Gmail Label \"${priority}\" nicht gefunden`);\n}\n\nreturn [{\n  json: {\n    labelId: label.json.id,\n    labelName: label.json.name\n  },\n  pairedItem: { item: 0 }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -32
+      ],
+      "id": "dc1b751b-83c1-4798-a25d-c7288617d3b2",
+      "name": "Ermitteln Label ID"
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $('Start Fallbearbeitung (je Email)').item.json.id }}",
+        "labelIds": "={{ $json.labelId }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        -32
+      ],
+      "id": "941dc006-5d14-43d7-9739-449b0af377ac",
+      "name": "Priorität des Labels setzen",
+      "webhookId": "7c9b8704-2c29-41ac-9ac7-9e565d3ae734",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "bHw96IRSG6IJR90W",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "90d841f5-7836-4194-956a-8e98b6229885",
+              "leftValue": "={{ $('Analyse Assistent').item.json.output.pruefung_erforderlich }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        368,
+        -32
+      ],
+      "id": "c6b7e38e-b4e0-4ee3-9684-fcc489000725",
+      "name": "automatischer Entwurf möglich?"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Start Fallbearbeitung (je Email)').item.json.id }}",
+        "emailType": "text",
+        "message": "={{ $json.data.Korrektur || $('Antwort Assistent').item.json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1296,
+        -32
+      ],
+      "id": "1076ef37-8250-4054-a41b-21812059492a",
+      "name": "Antwort versenden an den Kunden",
+      "webhookId": "e0f382e5-bc92-48cf-9ecf-c451741b32fb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "bHw96IRSG6IJR90W",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "robert.waechter@student.smartfuturecampus.de",
+        "subject": "=Antwortentwurf zur Freigabe: {{ $('Analyse Assistent').item.json.output.thema }}",
+        "message": "={{ $json.output }}",
+        "responseType": "customForm",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Entscheidung",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Freigeben"
+                  },
+                  {
+                    "option": "Nicht Freigeben"
+                  },
+                  {
+                    "option": "Korrigiert Freigeben"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Korrektur",
+              "fieldType": "textarea",
+              "placeholder": "Nur ausfüllen, wenn der Entwurf geändert werden soll."
+            }
+          ]
+        },
+        "options": {
+          "messageButtonLabel": "Prüfen und Freigeben",
+          "responseFormTitle": "Freigabe Antwortentwurf",
+          "responseFormDescription": "Bitte über den Antwortentwurf aus der Email entscheiden.",
+          "responseFormButtonLabel": "Absenden",
+          "appendAttribution": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        896,
+        -16
+      ],
+      "id": "ad0bc096-cd67-49df-a597-da15c0e3949b",
+      "name": "Antwortentwurf zur Freigabe an den Berater",
+      "webhookId": "1cd0188b-8c58-4dbf-bffd-7b55b0a7f77a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "bHw96IRSG6IJR90W",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "robert.waechter@student.smartfuturecampus.de",
+        "subject": "=Manuelle Prüfung erforderlich: {{ $('Analyse Assistent').item.json.output.thema }}",
+        "message": "=Dieser Fall wurde nicht automatisch beantwortet.  Anliegen: {{ $('Analyse Assistent').item.json.output.anliegen }} Priorität: {{ $('Analyse Assistent').item.json.output.prioritaet_bezeichnung }} Grund für die Prüfung: {{ $('Analyse Assistent').item.json.output.pruefungsgrund }} Fehlende Informationen: {{ $('Analyse Assistent').item.json.output.fehlende_informationen.join(', ') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        256
+      ],
+      "id": "a8f764a4-a8f0-422c-a4a4-d59a133a0d3a",
+      "name": "Hinweis manuelle Prüfung an den Berater",
+      "webhookId": "9ed4af15-3cb4-4ec0-8285-272ce834dc67",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "bHw96IRSG6IJR90W",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d0a63836-b74c-4caf-a0ad-f637d9dc4b8e",
+              "leftValue": "={{ $json.data.Entscheidung }}",
+              "rightValue": "Nicht freigeben",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1056,
+        -16
+      ],
+      "id": "38c966c6-23a7-443d-a71f-850d899469c7",
+      "name": "Versand an Kunde freigegeben?"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        -64
+      ],
+      "id": "eb406f7a-6ce3-45a0-bdc9-19d0e804294e",
+      "name": "Modell für strukturierte Analyse",
+      "credentials": {
+        "groqApi": {
+          "id": "jOXSAAOdTcdG7ZFq",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        80
+      ],
+      "id": "6539470b-bbe7-4b0b-a384-361b925e9f3f",
+      "name": "Modell für Formatkorrektur",
+      "credentials": {
+        "groqApi": {
+          "id": "jOXSAAOdTcdG7ZFq",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        752,
+        144
+      ],
+      "id": "9d0b08b3-272c-4b43-bb65-cc5d6b7bf670",
+      "name": "Modell für Antwortentwurf",
+      "credentials": {
+        "groqApi": {
+          "id": "jOXSAAOdTcdG7ZFq",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $workflow.id }}",
+          "mode": "id",
+          "cachedResultUrl": "/workflow/=%7B%7B%20$workflow.id%20%7D%7D"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -1376,
+        -208
+      ],
+      "id": "5c5bd685-f528-4951-8ba6-7e1d81368c51",
+      "name": "Call 'Fallbearbeitung(Unterworkflow)'"
+    },
+    {
+      "parameters": {
+        "content": "Abruf ungelesner und neu eingehender Emails",
+        "height": 256,
+        "width": 752,
+        "color": "#DC1818"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1824,
+        -272
+      ],
+      "typeVersion": 1,
+      "id": "5e6ccf92-720f-4e15-bf8c-9801811923fd",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 2
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1744,
+        -208
+      ],
+      "id": "09b3cb33-428b-4eca-b2d4-35591bbe1525",
+      "name": "Zeitplan Abruf"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 1,
+        "simple": false,
+        "filters": {
+          "q": "in:inbox -label:PRIORITY_HIGH -label:PRIORITY_MIDDLE -label:PRIORITY_LOW -label:PRIORITY_VERY_LOW -subject:\"Antwortentwurf zur Freigabe\" -subject:\"Manuelle Prüfung erforderlich\"",
+          "readStatus": "unread"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -1568,
+        -208
+      ],
+      "id": "071f9ad0-7869-4c8d-90cd-fea7499f018a",
+      "name": "ungelesene Emails abrufen",
+      "webhookId": "39d0d2c7-20ef-4d5b-915a-3edf29c0099b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "bHw96IRSG6IJR90W",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -960,
+        -240
+      ],
+      "id": "b1823673-4038-4147-a244-d03d3d3767a0",
+      "name": "Start Fallbearbeitung (je Email)"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Analyse Assistent": {
+      "main": [
+        [
+          {
+            "node": "Gmail Labels abrufen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Antwort Assistent": {
+      "main": [
+        [
+          {
+            "node": "Antwortentwurf zur Freigabe an den Berater",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Strukturierte Analyse": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Analyse Assistent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Labels abrufen": {
+      "main": [
+        [
+          {
+            "node": "Ermitteln Label ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ermitteln Label ID": {
+      "main": [
+        [
+          {
+            "node": "Priorität des Labels setzen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Priorität des Labels setzen": {
+      "main": [
+        [
+          {
+            "node": "automatischer Entwurf möglich?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "automatischer Entwurf möglich?": {
+      "main": [
+        [
+          {
+            "node": "Antwort Assistent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Hinweis manuelle Prüfung an den Berater",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Antwortentwurf zur Freigabe an den Berater": {
+      "main": [
+        [
+          {
+            "node": "Versand an Kunde freigegeben?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Versand an Kunde freigegeben?": {
+      "main": [
+        [
+          {
+            "node": "Antwort versenden an den Kunden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modell für strukturierte Analyse": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analyse Assistent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modell für Formatkorrektur": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Strukturierte Analyse",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modell für Antwortentwurf": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Antwort Assistent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zeitplan Abruf": {
+      "main": [
+        [
+          {
+            "node": "ungelesene Emails abrufen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ungelesene Emails abrufen": {
+      "main": [
+        [
+          {
+            "node": "Call 'Fallbearbeitung(Unterworkflow)'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Fallbearbeitung (je Email)": {
+      "main": [
+        [
+          {
+            "node": "Analyse Assistent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "5420c3a5-5b21-4bf6-a120-29d706385934",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f893ce3deeb3a146d3b5ebabb6a81050d4c4ffc7a66371cfc016c98c50d1c41a"
+  },
+  "nodeGroups": [],
+  "id": "NUZPVYxEkXKcqrQz",
+  "tags": []
+}
